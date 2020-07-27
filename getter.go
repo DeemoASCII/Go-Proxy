@@ -46,7 +46,7 @@ func Getter() {
 	switch {
 	case GetIpType == "PollingProxyPool":
 		for {
-			if len(ProxyUrls.ProxyURLs) <= 40 {
+			if ProxyUrls.size <= int32(20) {
 				GetIpFromZhiMa()
 			}
 			time.Sleep(2 * time.Second)
@@ -106,7 +106,8 @@ func GetIpFromApeYun() {
 		for _, d := range resp.Data {
 			proxyUrl := fmt.Sprintf(`http://%v`, d.Ip+":"+strconv.Itoa(d.Port))
 			log.Infof("[Getter] %v 获取到 IP: [%v]", name, proxyUrl)
-			IpChan <- proxyUrl
+			ip := IP{Proxy: proxyUrl, First: true}
+			IpChan <- ip
 		}
 	} else {
 		log.Errorf("[Getter] %v 获取 IP 出错了: %v", name, errStr)
@@ -169,7 +170,8 @@ func GetIpFromZhiMa() {
 		for _, d := range resp.Data {
 			proxyUrl := fmt.Sprintf(`http://%v`, d.Ip+":"+strconv.Itoa(d.Port))
 			log.Infof("[Getter] %v 获取到 IP: [%v]", name, proxyUrl)
-			IpChan <- proxyUrl
+			ip := IP{Proxy: proxyUrl, First: true}
+			IpChan <- ip
 		}
 	} else {
 		log.Errorf("[Getter] %v 获取 IP 出错了: %v", name, errStr)

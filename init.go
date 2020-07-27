@@ -10,13 +10,19 @@ import (
 
 var lock sync.Mutex
 var ProxyUrls ProxySwitcher
-var IpChan chan string
+var IpChan chan IP
 var GetIpType = GetEnv("GETIPTYPE", "PollingProxyPool")
 var log = logrus.New()
 
 type ProxySwitcher struct {
 	ProxyURLs []string
 	index     uint32
+	size      int32
+}
+
+type IP struct {
+	Proxy string
+	First bool
 }
 
 func (r *ProxySwitcher) GetRoundProxy() string {
@@ -37,15 +43,15 @@ func CronCheckProxy() {
 		ProxyUrls.ProxyURLs = []string{}
 		lock.Unlock()
 		for _, url := range urls {
-			NewUrl := url
-			IpChan <- NewUrl
+			ip := IP{Proxy: url, First: false}
+			IpChan <- ip
 		}
 	}
 }
 
 func init() {
 	ProxyUrls = ProxySwitcher{}
-	IpChan = make(chan string, 100)
+	IpChan = make(chan IP, 100)
 }
 
 func GetEnv(key, fallback string) string {
