@@ -39,10 +39,10 @@ func handle(client net.Conn) {
 		return
 	}
 	log.Printf("[Proxy] client tcp tunnel connection: [%v] -> [%v]", client.LocalAddr().String(), client.RemoteAddr().String())
-	// client.SetDeadline(time.Now().Add(time.Duration(10) * time.Second))
+	//client.SetDeadline(time.Now().Add(time.Duration(20) * time.Second))
 	defer client.Close()
 
-	var b [1024]byte
+	var b [2048]byte
 	n, err := client.Read(b[:])
 	if err != nil || bytes.IndexByte(b[:], '\n') == -1 {
 		log.Errorln("[Proxy] 读取应用层的所有数据出错了:", err, b)
@@ -73,7 +73,7 @@ func handle(client net.Conn) {
 	//在应用层完成数据转发后，关闭传输层的通道
 	defer server.Close()
 	log.Infof("[Proxy] server tcp tunnel connection: [%v] -> [%v]", server.LocalAddr().String(), server.RemoteAddr().String())
-	// server.SetDeadline(time.Now().Add(time.Duration(10) * time.Second))
+	server.SetDeadline(time.Now().Add(time.Duration(30) * time.Second))
 
 	if method == "CONNECT" {
 		fmt.Fprint(client, "HTTP/1.1 200 Connection established\r\n\r\n")

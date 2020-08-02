@@ -13,6 +13,10 @@ var ProxyUrls ProxySwitcher
 var IpChan chan IP
 var GetIpType = GetEnv("GETIPTYPE", "PollingProxyPool")
 var log = logrus.New()
+var ProxyPoolSize = int32(5)
+var loc, _ = time.LoadLocation("Asia/Chongqing")
+var endTime, _ = time.ParseInLocation("15:04:05", "20:00:00", loc)
+var startTime, _ = time.ParseInLocation("15:04:05", "08:00:00", loc)
 
 type ProxySwitcher struct {
 	ProxyURLs []string
@@ -36,8 +40,8 @@ func (r *ProxySwitcher) GetRoundProxy() string {
 
 func CronCheckProxy() {
 	for {
-		time.Sleep(30 * time.Second)
-		log.Infoln("[Proxy] 当前拥有的 IP 数量为:", len(ProxyUrls.ProxyURLs))
+		time.Sleep(20 * time.Second)
+		log.Infoln("[Proxy] 当前拥有的 IP 数量为:", ProxyUrls.size)
 		lock.Lock()
 		urls := ProxyUrls.ProxyURLs
 		ProxyUrls.ProxyURLs = []string{}
@@ -51,7 +55,7 @@ func CronCheckProxy() {
 
 func init() {
 	ProxyUrls = ProxySwitcher{}
-	IpChan = make(chan IP, 100)
+	IpChan = make(chan IP, 1000)
 }
 
 func GetEnv(key, fallback string) string {

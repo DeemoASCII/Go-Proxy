@@ -7,7 +7,11 @@ cd run
 go build main.go
 ./main
 ```
-
+支持 docker 启动
+```bash
+docker build -t proxy:latest .
+docker run -d -p 3128:3128 --name proxy proxy:latest
+```
 ## 使用方法
 直接绑定 3128 端口即可，会动态转发一个随机 IP
 

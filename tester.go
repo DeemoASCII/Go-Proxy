@@ -52,7 +52,7 @@ func TestIP(ip IP) {
 			atomic.AddInt32(&ProxyUrls.size, 1)
 		}
 		lock.Lock()
-		log.Infof("[Tester] 测试器测试 IP [%v] 可用", ip.Proxy)
+		//log.Infof("[Tester] 测试器测试 IP [%v] 可用", proxyUrl)
 		ProxyUrls.ProxyURLs = append(ProxyUrls.ProxyURLs, ip.Proxy)
 		lock.Unlock()
 	}
